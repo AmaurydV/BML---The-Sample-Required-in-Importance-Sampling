@@ -99,7 +99,6 @@ def experiment(
     results_iid = {}
     results_mcmc = {}
 
-    # nouveaux : résultats quand n est construit avec L_hat
     results_iid_Lhat = {}
     results_mcmc_Lhat = {}
 
@@ -144,11 +143,11 @@ def experiment(
         results_mcmc_Lhat[N] = {"L_hat": float(L_hat_iid), "sigma": float(sigma), "by_c": {}}
 
         for c in c_grid:
-            # --- n basé sur L théorique ---
+            #  n basé sur L théorique 
             logn = L + c * sigma
             n = _safe_n_from_logn(logn)
 
-            # --- n basé sur L_hat ---
+            #  n basé sur L_hat 
             logn_hat = L_hat_iid + c * sigma
             n_hat = _safe_n_from_logn(logn_hat)
 
@@ -189,7 +188,6 @@ def experiment(
                 Qs_mcmc.append(Qn_mcmc)
 
                 #  (B) résultats avec n_hat 
-                # (nouveaux RNG pour éviter corrélations bizarres liées au changement de n)
                 rng_iid_h = np.random.default_rng(rng_master.integers(0, 2**63 - 1))
                 rng_mcmc_h = np.random.default_rng(rng_master.integers(0, 2**63 - 1))
 
