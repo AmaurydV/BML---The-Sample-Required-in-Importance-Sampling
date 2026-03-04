@@ -11,16 +11,22 @@ def logN_diag_I(x, mean):
     diff = x - mean
     return -0.5 * (d * LOG2PI + np.sum(diff * diff, axis=1))
 
-def log_mix_two_gaussians_I(x, m):
+def log_mix_two_gaussians_I(x, m, eps=0.001):
     """
-    log(0.5 N(+m,I) + 0.5 N(-m,I)) using log-sum-exp (stable)
+    log( eps N(+m,I) + (1-eps) N(-m,I) )
     """
     x = np.atleast_2d(x)
-    lp = logN_diag_I(x, +m)
-    lm = logN_diag_I(x, -m)
-    # log(0.5 e^lp + 0.5 e^lm) = logsumexp([lp, lm]) - log 2
+
+    lp = logN_diag_I(x, +m)   # rare component
+    lm = logN_diag_I(x, -m)   # dominant component
+
+    # log( eps e^lp + (1-eps) e^lm )  via log-sum-exp
     mx = np.maximum(lp, lm)
-    return mx + np.log(np.exp(lp - mx) + np.exp(lm - mx)) - np.log(2.0)
+
+    return mx + np.log(
+        eps * np.exp(lp - mx)
+        + (1 - eps) * np.exp(lm - mx)
+    )
 
 def sample_nu_mixture(rng, n, m):
     """
